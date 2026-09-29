@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -29,8 +30,9 @@ import mx.tec.crystalguard.ui.theme.CrystalGuardTheme
 fun TopBar(
     modifier: Modifier = Modifier,
     title: String = "Crystal Guard",
-    onMenuClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {},
+    onBackClick: (() -> Unit)? = null,
+    onMenuClick: (() -> Unit)? = null,
+    onProfileClick: (() -> Unit)? = null,
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -40,32 +42,43 @@ fun TopBar(
                 fontWeight = FontWeight.Bold,
             )
         },
-        /*navigationIcon = {
-            IconButton(onClick = onMenuClick) {
-                Icon(
-                    imageVector = Icons.Filled.Menu,
-                    contentDescription = "Menú de navegación",
-                )
-            }
-        },*/
-        actions = {
-            IconButton(
-                onClick = onProfileClick,
-                modifier = Modifier.padding(end = 4.dp),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer),
-                    contentAlignment = Alignment.Center,
-                ) {
+        navigationIcon = {
+            if (onBackClick != null) {
+                IconButton(onClick = onBackClick) {
                     Icon(
-                        imageVector = Icons.Filled.Person,
-                        contentDescription = "Imagen de perfil",
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(22.dp),
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Regresar",
                     )
+                }
+            } else if (onMenuClick != null) {
+                IconButton(onClick = onMenuClick) {
+                    Icon(
+                        imageVector = Icons.Filled.Menu,
+                        contentDescription = "Menú de navegación",
+                    )
+                }
+            }
+        },
+        actions = {
+            if (onProfileClick != null) {
+                IconButton(
+                    onClick = onProfileClick,
+                    modifier = Modifier.padding(end = 4.dp),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primaryContainer),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Person,
+                            contentDescription = "Imagen de perfil",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.size(22.dp),
+                        )
+                    }
                 }
             }
         },

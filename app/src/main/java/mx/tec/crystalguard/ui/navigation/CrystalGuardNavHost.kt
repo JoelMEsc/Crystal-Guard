@@ -15,13 +15,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import mx.tec.crystalguard.ui.components.TopBar
 import mx.tec.crystalguard.ui.screens.EducatorDashboardScreen
+import mx.tec.crystalguard.ui.screens.GroupDetailScreen
 import mx.tec.crystalguard.ui.state.EducatorDashboardViewModel
+import mx.tec.crystalguard.ui.state.GroupDetailViewModel
 
 private data class NavItem(
     val route: String,
@@ -33,16 +36,25 @@ private data class NavItem(
 fun CrystalGuardNavHost(onSalir: () -> Unit) {
     val nav = rememberNavController()
 
-    // Lista de rutas que muestran TopBar y BottomBar
-    val educatorScreens: List<String> = listOf(
+    // Rutas que muestran la TopBar principal
+    val topBarScreens: List<String> = listOf(
         Route.EDUCATOR_DASHBOARD,
         Route.EDUCATOR_CALENDAR,
         Route.EDUCATOR_NOTIFICATIONS,
     )
 
+    // Rutas que muestran la BottomBar (incluyendo el detalle de grupo)
+    val bottomBarScreens: List<String> = listOf(
+        Route.EDUCATOR_DASHBOARD,
+        Route.EDUCATOR_CALENDAR,
+        Route.EDUCATOR_NOTIFICATIONS,
+        Route.GROUP_DETAIL,
+    )
+
     val backStackEntry by nav.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
-    val showTopAndBottomBar = currentRoute in educatorScreens
+    val showTopBar = currentRoute in topBarScreens
+    val showBottomBar = currentRoute in bottomBarScreens
 
     // Definición "de fondo" de los 3 elementos de navegación
     val allNavItems = listOf(
@@ -68,7 +80,7 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
 
     Scaffold(
         topBar = {
-            if (showTopAndBottomBar) {
+            if (showTopBar) {
                 TopBar(
                     title = "Crystal Guard",
                     onMenuClick = { /* Menú lateral / opciones */ },
@@ -77,10 +89,11 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
             }
         },
         bottomBar = {
-            if (showTopAndBottomBar) {
+            if (showBottomBar) {
                 NavigationBar {
                     visibleNavItems.forEach { item ->
-                        val selected = currentRoute == item.route
+                        val selected = currentRoute == item.route ||
+                                (item.route == Route.EDUCATOR_DASHBOARD && currentRoute == Route.GROUP_DETAIL)
                         NavigationBarItem(
                             selected = selected,
                             onClick = {
@@ -119,6 +132,22 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                     groups = viewModel.groups,
                     onClick = { id -> nav.navigate(Route.detail(id)) },
                 )
+            }
+
+            composable(Route.GROUP_DETAIL) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: GroupDetailViewModel = viewModel()
+                viewModel.cargar(groupId)
+
+                val group = viewModel.group
+                if (group != null) {
+                    GroupDetailScreen(
+                        group = group,
+                        onBackClick = { nav.popBackStack() },
+                    )
+                }
             }
 
             composable(Route.EDUCATOR_CALENDAR) {
