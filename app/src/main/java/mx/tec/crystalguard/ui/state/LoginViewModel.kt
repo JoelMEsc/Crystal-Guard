@@ -25,12 +25,4 @@ class LoginViewModel() : ViewModel() {
     fun onPasswordChange(texto: String) {
         uiState = uiState.copy(password = texto)
     }
-
-    /**
-     * No recibe un `alTerminar`: cuando el repositorio guarda la sesión, el
-     * `SesionViewModel` la ve y la app cambia de pantalla sola.
-     */
-    fun enviar() {
-
-    }
 }

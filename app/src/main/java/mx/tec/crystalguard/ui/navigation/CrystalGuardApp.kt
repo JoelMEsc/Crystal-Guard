@@ -42,13 +42,7 @@ fun CrystalGuardApp() {
             )
         }
 
-        Role.EDUCATOR -> {
-            val loginViewModel: LoginViewModel = viewModel()
-            LoginScreen(
-                uiState = LoginUiState(user = "Eduardo Castillo", password = "secreta123"),
-                onUsuarioChange = {}, onPasswordChange = {}, onEnviar = {}
-            )
-        }
+        Role.EDUCATOR -> CrystalGuardNavHost({})
 
         Role.TUTOR -> {
             val loginViewModel: LoginViewModel = viewModel()
