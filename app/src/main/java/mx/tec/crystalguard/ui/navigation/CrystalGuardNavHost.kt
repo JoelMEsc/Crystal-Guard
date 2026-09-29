@@ -1,110 +1,63 @@
 package mx.tec.crystalguard.ui.navigation
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Dashboard
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import mx.tec.crystalguard.ui.components.BottomNavBar
 import mx.tec.crystalguard.ui.components.TopBar
 import mx.tec.crystalguard.ui.screens.EducatorDashboardScreen
 import mx.tec.crystalguard.ui.state.EducatorDashboardViewModel
-
-private data class NavItem(
-    val route: String,
-    val title: String,
-    val icon: ImageVector,
-)
+import mx.tec.crystalguard.ui.state.NavigationViewModel
 
 @Composable
 fun CrystalGuardNavHost(onSalir: () -> Unit) {
     val nav = rememberNavController()
-
-    // Lista de rutas que muestran TopBar y BottomBar
-    val educatorScreens: List<String> = listOf(
-        Route.EDUCATOR_DASHBOARD,
-        Route.EDUCATOR_CALENDAR,
-        Route.EDUCATOR_NOTIFICATIONS,
-    )
+    val navViewModel: NavigationViewModel = viewModel()
 
     val backStackEntry by nav.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
-    val showTopAndBottomBar = currentRoute in educatorScreens
+    val showTopBar = currentRoute in navViewModel.educatorTopBarScreens
 
-    // Definición "de fondo" de los 3 elementos de navegación
-    val allNavItems = listOf(
-        NavItem(
-            route = Route.EDUCATOR_DASHBOARD,
-            title = "Tablero",
-            icon = Icons.Filled.Dashboard,
-        ),
-        NavItem(
-            route = Route.EDUCATOR_CALENDAR,
-            title = "Calendario",
-            icon = Icons.Filled.CalendarMonth,
-        ),
-        NavItem(
-            route = Route.EDUCATOR_NOTIFICATIONS,
-            title = "Notificaciones",
-            icon = Icons.Filled.Notifications,
-        ),
-    )
-
-    // Por ahora, solo muestra 1 elemento ("Tablero") en la interfaz
-    val visibleNavItems = allNavItems.take(1)
+    val currentRouteFormated = when (val current = currentRoute) {
+        "educatorDashboard" -> "Tablero"
+        "educatorCalendar" -> "Calendario"
+        "educatorNotificacions" -> "Notificaciones"
+        else -> null
+    }
 
     Scaffold(
         topBar = {
-            if (showTopAndBottomBar) {
+            if (showTopBar) {
                 TopBar(
                     title = "Crystal Guard",
-                    onMenuClick = { /* Menú lateral / opciones */ },
+                    subtitle = currentRouteFormated,
                     onProfileClick = { /* Perfil */ },
                 )
             }
         },
         bottomBar = {
-            if (showTopAndBottomBar) {
-                NavigationBar {
-                    visibleNavItems.forEach { item ->
-                        val selected = currentRoute == item.route
-                        NavigationBarItem(
-                            selected = selected,
-                            onClick = {
-                                if (currentRoute != item.route) {
-                                    nav.navigate(item.route) {
-                                        popUpTo(nav.graph.startDestinationId) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                }
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector = item.icon,
-                                    contentDescription = item.title,
-                                )
-                            },
-                            label = { Text(item.title) },
-                        )
+            BottomNavBar(
+                items = navViewModel.uiState.items,
+                currentRoute = currentRoute,
+                onItemClick = { route ->
+                    if (currentRoute != route) {
+                        nav.navigate(route) {
+                            popUpTo(nav.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
-                }
-            }
+                },
+            )
         },
     ) { padding ->
         NavHost(

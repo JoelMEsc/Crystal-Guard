@@ -2,11 +2,12 @@ package mx.tec.crystalguard.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,33 +30,41 @@ import mx.tec.crystalguard.ui.theme.CrystalGuardTheme
 fun TopBar(
     modifier: Modifier = Modifier,
     title: String = "Crystal Guard",
-    onMenuClick: () -> Unit = {},
+    subtitle: String? = null,
     onProfileClick: () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
         title = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-            )
-        },
-        /*navigationIcon = {
-            IconButton(onClick = onMenuClick) {
-                Icon(
-                    imageVector = Icons.Filled.Menu,
-                    contentDescription = "Menú de navegación",
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
+                if (!subtitle.isNullOrBlank()) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
             }
-        },*/
+        },
+        navigationIcon = {
+            Spacer(modifier = Modifier.size(48.dp))
+        },
         actions = {
             IconButton(
                 onClick = onProfileClick,
-                modifier = Modifier.padding(end = 4.dp),
+                modifier = Modifier.padding(end = 8.dp),
             ) {
                 Box(
                     modifier = Modifier
-                        .size(36.dp)
+                        .size(38.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center,
@@ -64,7 +73,7 @@ fun TopBar(
                         imageVector = Icons.Filled.Person,
                         contentDescription = "Imagen de perfil",
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(22.dp),
+                        modifier = Modifier.size(24.dp),
                     )
                 }
             }
@@ -80,6 +89,8 @@ fun TopBar(
 @Composable
 private fun TopBarPreview() {
     CrystalGuardTheme {
-        TopBar()
+        TopBar(
+            subtitle = "Dashboard"
+        )
     }
 }
