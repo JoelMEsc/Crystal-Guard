@@ -7,11 +7,12 @@ import androidx.lifecycle.ViewModel
 import mx.tec.crystalguard.data.CrystalGuardRepository
 import mx.tec.crystalguard.domain.Group
 
-class EducatorDashboardViewModel(private val repository: CrystalGuardRepository) : ViewModel() {
+class EducatorDashboardViewModel(
+    private val repository: CrystalGuardRepository = CrystalGuardRepository()
+) : ViewModel() {
 
-    var groups by mutableStateOf<List<Group>>(emptyList())
+    var groups by mutableStateOf<List<Group>>(repository.getAll())
         private set
 
     fun cargar(): List<Group> = repository.getAll()
-
 }
