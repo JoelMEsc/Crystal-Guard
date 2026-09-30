@@ -16,23 +16,25 @@ import mx.tec.crystalguard.ui.components.BottomNavBar
 import mx.tec.crystalguard.ui.components.SecondaryTopBar
 import mx.tec.crystalguard.ui.components.TopBar
 import mx.tec.crystalguard.ui.components.VacioView
-import mx.tec.crystalguard.ui.screens.ClassMaterialScreen
 import mx.tec.crystalguard.ui.screens.AnnouncementsScreen
 import mx.tec.crystalguard.ui.screens.AttendanceScreen
+import mx.tec.crystalguard.ui.screens.ClassMaterialScreen
 import mx.tec.crystalguard.ui.screens.EducatorCalendarScreen
 import mx.tec.crystalguard.ui.screens.EducatorDashboardScreen
 import mx.tec.crystalguard.ui.screens.GalleryScreen
 import mx.tec.crystalguard.ui.screens.GroupCalendarScreen
 import mx.tec.crystalguard.ui.screens.GroupDetailScreen
-import mx.tec.crystalguard.ui.state.ClassMaterialViewModel
+import mx.tec.crystalguard.ui.screens.PeopleScreen
 import mx.tec.crystalguard.ui.state.AnnouncementsViewModel
 import mx.tec.crystalguard.ui.state.AttendanceViewModel
+import mx.tec.crystalguard.ui.state.ClassMaterialViewModel
 import mx.tec.crystalguard.ui.state.EducatorCalendarViewModel
 import mx.tec.crystalguard.ui.state.EducatorDashboardViewModel
 import mx.tec.crystalguard.ui.state.GalleryViewModel
 import mx.tec.crystalguard.ui.state.GroupCalendarViewModel
 import mx.tec.crystalguard.ui.state.GroupDetailViewModel
 import mx.tec.crystalguard.ui.state.NavigationViewModel
+import mx.tec.crystalguard.ui.state.PeopleViewModel
 
 @Composable
 fun CrystalGuardNavHost(onSalir: () -> Unit) {
@@ -228,8 +230,19 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                 )
             }
 
-            composable(Route.PEOPLE) {
-                VacioView(mensaje = "Pantalla de Personas en construcción.")
+            composable(Route.PEOPLE) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: PeopleViewModel = viewModel()
+
+                LaunchedEffect(groupId) {
+                    viewModel.cargarPersonas(groupId)
+                }
+
+                PeopleScreen(
+                    viewModel = viewModel,
+                )
             }
 
             composable(Route.BITACORA) {
