@@ -23,10 +23,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import mx.tec.crystalguard.ui.components.TopBar
 import mx.tec.crystalguard.ui.screens.AnnouncementsScreen
+import mx.tec.crystalguard.ui.screens.AttendanceScreen
 import mx.tec.crystalguard.ui.screens.EducatorDashboardScreen
+import mx.tec.crystalguard.ui.screens.GalleryScreen
 import mx.tec.crystalguard.ui.screens.GroupDetailScreen
 import mx.tec.crystalguard.ui.state.AnnouncementsViewModel
+import mx.tec.crystalguard.ui.state.AttendanceViewModel
 import mx.tec.crystalguard.ui.state.EducatorDashboardViewModel
+import mx.tec.crystalguard.ui.state.GalleryViewModel
 import mx.tec.crystalguard.ui.state.GroupDetailViewModel
 
 private data class NavItem(
@@ -46,13 +50,15 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
         Route.EDUCATOR_NOTIFICATIONS,
     )
 
-    // Rutas que muestran la BottomBar (incluyendo detalle de grupo y anuncios)
+    // Rutas que muestran la BottomBar (incluyendo detalle de grupo, anuncios, pase de lista y galería)
     val bottomBarScreens: List<String> = listOf(
         Route.EDUCATOR_DASHBOARD,
         Route.EDUCATOR_CALENDAR,
         Route.EDUCATOR_NOTIFICATIONS,
         Route.GROUP_DETAIL,
         Route.ANNOUNCEMENTS,
+        Route.ATTENDANCE,
+        Route.GALERIA,
     )
 
     val backStackEntry by nav.currentBackStackEntryAsState()
@@ -98,7 +104,10 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                     visibleNavItems.forEach { item ->
                         val selected = currentRoute == item.route ||
                                 (item.route == Route.EDUCATOR_DASHBOARD &&
-                                        (currentRoute == Route.GROUP_DETAIL || currentRoute == Route.ANNOUNCEMENTS))
+                                        (currentRoute == Route.GROUP_DETAIL ||
+                                                currentRoute == Route.ANNOUNCEMENTS ||
+                                                currentRoute == Route.ATTENDANCE ||
+                                                currentRoute == Route.GALERIA))
                         NavigationBarItem(
                             selected = selected,
                             onClick = {
@@ -165,6 +174,31 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                 )
             }
 
+            composable(Route.ATTENDANCE) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: AttendanceViewModel = viewModel()
+
+                LaunchedEffect(groupId) {
+                    viewModel.cargar(groupId)
+                }
+
+                AttendanceScreen(
+                    uiState = viewModel.uiState,
+                    onBackClick = { nav.popBackStack() },
+                    onToggleLlego = { id -> viewModel.toggleLlego(id) },
+                    onToggleSeFue = { id -> viewModel.toggleSeFue(id) },
+                    onToggleNoAsistio = { id -> viewModel.toggleNoAsistio(id) },
+                    onDejoSelected = { id, persona -> viewModel.actualizarDejoPersona(id, persona) },
+                    onRecogioSelected = { id, persona -> viewModel.actualizarRecogioPersona(id, persona) },
+                    onToggleEditarClick = { viewModel.toggleModoEdicion() },
+                    onGuardarClick = { viewModel.guardarCambios() },
+                    onLimpiarMensaje = { viewModel.limpiarMensajes() },
+                    onReintentar = { viewModel.cargar(groupId) },
+                )
+            }
+
             composable(Route.ANNOUNCEMENTS) { entry: NavBackStackEntry ->
                 val groupIdStr = entry.arguments?.getString("groupId")
                 val groupId = groupIdStr?.toIntOrNull() ?: 1
@@ -184,6 +218,24 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                         viewModel.publicarAnuncioPersonalizado(titulo, contenido)
                     },
                     onAnuncioClick = { anuncio -> viewModel.seleccionarAnuncio(anuncio) },
+                    onReintentar = { viewModel.cargar(groupId) },
+                )
+            }
+
+            composable(Route.GALERIA) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: GalleryViewModel = viewModel()
+
+                LaunchedEffect(groupId) {
+                    viewModel.cargar(groupId)
+                }
+
+                GalleryScreen(
+                    uiState = viewModel.uiState,
+                    onBackClick = { nav.popBackStack() },
+                    onImageClick = { image -> viewModel.seleccionarImagen(image) },
                     onReintentar = { viewModel.cargar(groupId) },
                 )
             }

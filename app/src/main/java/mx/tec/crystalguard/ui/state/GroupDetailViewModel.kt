@@ -60,8 +60,10 @@ class GroupDetailViewModel(
     fun onItemClick(item: SelectionItemData, onNavigate: (String) -> Unit) {
         val groupId = uiState.group?.id ?: return
         val targetRoute = when (item.id) {
-            3 -> Route.announcements(groupId) // Solo 'Anuncios' está implementado por ahora
-            else -> null // Las demás opciones aún no tienen pantalla en NavHost
+            2 -> Route.attendance(groupId) // Pase de lista
+            3 -> Route.announcements(groupId) // Anuncios
+            5 -> Route.galery(groupId) // Galería
+            else -> null
         }
         if (targetRoute != null) {
             onNavigate(targetRoute)
