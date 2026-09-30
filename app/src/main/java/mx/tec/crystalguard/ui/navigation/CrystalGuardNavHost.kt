@@ -11,6 +11,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -139,15 +140,21 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                 val groupId = groupIdStr?.toIntOrNull() ?: 1
 
                 val viewModel: GroupDetailViewModel = viewModel()
-                viewModel.cargar(groupId)
 
-                val group = viewModel.group
-                if (group != null) {
-                    GroupDetailScreen(
-                        group = group,
-                        onBackClick = { nav.popBackStack() },
-                    )
+                LaunchedEffect(groupId) {
+                    viewModel.cargarGrupo(groupId)
                 }
+
+                GroupDetailScreen(
+                    uiState = viewModel.uiState,
+                    onBackClick = { nav.popBackStack() },
+                    onItemClick = { item ->
+                        viewModel.onItemClick(item) { route ->
+                            // nav.navigate(route) // Se puede descomentar cuando existan las pantallas
+                        }
+                    },
+                    onReintentar = { viewModel.cargarGrupo(groupId) },
+                )
             }
 
             composable(Route.EDUCATOR_CALENDAR) {
