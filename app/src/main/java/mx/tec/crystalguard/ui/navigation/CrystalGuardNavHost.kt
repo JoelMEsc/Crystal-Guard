@@ -17,9 +17,11 @@ import mx.tec.crystalguard.ui.components.SecondaryTopBar
 import mx.tec.crystalguard.ui.components.TopBar
 import mx.tec.crystalguard.ui.screens.EducatorCalendarScreen
 import mx.tec.crystalguard.ui.screens.EducatorDashboardScreen
+import mx.tec.crystalguard.ui.screens.GroupCalendarScreen
 import mx.tec.crystalguard.ui.screens.GroupDetailScreen
 import mx.tec.crystalguard.ui.state.EducatorCalendarViewModel
 import mx.tec.crystalguard.ui.state.EducatorDashboardViewModel
+import mx.tec.crystalguard.ui.state.GroupCalendarViewModel
 import mx.tec.crystalguard.ui.state.GroupDetailViewModel
 import mx.tec.crystalguard.ui.state.NavigationViewModel
 
@@ -42,6 +44,7 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
 
     val secondaryScreenTitle = when {
         currentRoute?.startsWith("detail") == true || currentRoute == Route.GROUP_DETAIL -> "Detalle del Grupo"
+        currentRoute?.startsWith("calendar/") == true || currentRoute == Route.CALENDAR -> "Calendario de Grupo"
         else -> "Detalle"
     }
 
@@ -107,10 +110,25 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                     onBackClick = { nav.popBackStack() },
                     onItemClick = { item ->
                         viewModel.onItemClick(item) { route ->
-                            // nav.navigate(route)
+                            nav.navigate(route)
                         }
                     },
                     onReintentar = { viewModel.cargarGrupo(groupId) },
+                )
+            }
+
+            composable(Route.CALENDAR) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: GroupCalendarViewModel = viewModel()
+
+                LaunchedEffect(groupId) {
+                    viewModel.cargarCalendarioGrupo(groupId)
+                }
+
+                GroupCalendarScreen(
+                    viewModel = viewModel,
                 )
             }
 
