@@ -11,11 +11,7 @@ import mx.tec.crystalguard.domain.GalleryImage
 import mx.tec.crystalguard.domain.Group
 import mx.tec.crystalguard.domain.StudentAttendance
 
-class CrystalGuardRepository private constructor() {
-
-    companion object {
-        val instance: CrystalGuardRepository by lazy { CrystalGuardRepository() }
-    }
+object CrystalGuardRepository {
 
     private val groupData = listOf(
         Group(1, "Abejitas", "Gpo 302", Icons.Filled.EmojiNature, Color.Yellow),

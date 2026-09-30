@@ -8,7 +8,7 @@ import mx.tec.crystalguard.data.CrystalGuardRepository
 import mx.tec.crystalguard.domain.Group
 
 class EducatorDashboardViewModel(
-    private val repository: CrystalGuardRepository = CrystalGuardRepository.instance
+    private val repository: CrystalGuardRepository = CrystalGuardRepository
 ) : ViewModel() {
 
     var groups by mutableStateOf<List<Group>>(repository.getAll())

@@ -40,7 +40,7 @@ fun EducatorDashboardScreen(
 @Preview(showBackground = true)
 @Composable
 fun EducatorDashboardScreenPreview() {
-    val repository = CrystalGuardRepository.instance
+    val repository = CrystalGuardRepository
     CrystalGuardTheme {
         EducatorDashboardScreen(
             groups = repository.getAll(),

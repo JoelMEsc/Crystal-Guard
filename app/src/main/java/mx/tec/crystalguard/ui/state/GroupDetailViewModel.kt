@@ -25,11 +25,13 @@ data class GroupDetailUiState(
 )
 
 class GroupDetailViewModel(
-    private val repository: CrystalGuardRepository = CrystalGuardRepository.instance,
+    private val repository: CrystalGuardRepository = CrystalGuardRepository,
 ) : ViewModel() {
 
     var uiState by mutableStateOf(GroupDetailUiState())
         private set
+
+    private var lastNavTime = 0L
 
     fun cargarGrupo(groupId: Int) {
         uiState = uiState.copy(isLoading = true)
@@ -58,6 +60,12 @@ class GroupDetailViewModel(
     }
 
     fun onItemClick(item: SelectionItemData, onNavigate: (String) -> Unit) {
+        val currentTime = System.currentTimeMillis()
+        // Evita que toques multifinger o clics veloces abran múltiples pantallas
+        if ((currentTime - lastNavTime) < 800L) {
+            return
+        }
+
         val groupId = uiState.group?.id ?: return
         val targetRoute = when (item.id) {
             2 -> Route.attendance(groupId) // Pase de lista
@@ -66,6 +74,7 @@ class GroupDetailViewModel(
             else -> null
         }
         if (targetRoute != null) {
+            lastNavTime = currentTime
             onNavigate(targetRoute)
         }
     }

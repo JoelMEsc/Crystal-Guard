@@ -15,7 +15,7 @@ data class GalleryUiState(
 )
 
 class GalleryViewModel(
-    private val repository: CrystalGuardRepository = CrystalGuardRepository.instance,
+    private val repository: CrystalGuardRepository = CrystalGuardRepository,
 ) : ViewModel() {
 
     var uiState by mutableStateOf(GalleryUiState())

@@ -112,13 +112,7 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                             selected = selected,
                             onClick = {
                                 if (currentRoute != item.route) {
-                                    nav.navigate(item.route) {
-                                        popUpTo(nav.graph.startDestinationId) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
+                                    nav.navigateSingle(item.route)
                                 }
                             },
                             icon = {
@@ -144,7 +138,7 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
 
                 EducatorDashboardScreen(
                     groups = viewModel.groups,
-                    onClick = { id -> nav.navigate(Route.detail(id)) },
+                    onClick = { id -> nav.navigateSingle(Route.detail(id)) },
                 )
             }
 
@@ -164,7 +158,7 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                     onItemClick = { item ->
                         viewModel.onItemClick(item) { route ->
                             try {
-                                nav.navigate(route)
+                                nav.navigateSingle(route)
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
