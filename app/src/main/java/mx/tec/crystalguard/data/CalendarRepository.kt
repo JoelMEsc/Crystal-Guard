@@ -1,8 +1,14 @@
 package mx.tec.crystalguard.data
 
 import mx.tec.crystalguard.domain.CalendarActivity
+import mx.tec.crystalguard.domain.MonthDay
 import mx.tec.crystalguard.domain.WeekDay
 import mx.tec.crystalguard.domain.WeekInfo
+
+data class MonthCalendarInfo(
+    val monthYearTitle: String,
+    val days: List<MonthDay>,
+)
 
 class CalendarRepository {
 
@@ -42,6 +48,33 @@ class CalendarRepository {
                 WeekDay(letter = "S", number = 10, isSelected = false),
                 WeekDay(letter = "D", number = 11, isSelected = false),
             ),
+        ),
+    )
+
+    private val availableMonths = listOf(
+        MonthCalendarInfo(
+            monthYearTitle = "Agosto 2026",
+            days = buildList {
+                for (i in 27..31) add(MonthDay(dayNumber = i, isCurrentMonth = false))
+                for (i in 1..31) add(MonthDay(dayNumber = i, isCurrentMonth = true, isSelected = (i == 15)))
+                for (i in 1..6) add(MonthDay(dayNumber = i, isCurrentMonth = false))
+            },
+        ),
+        MonthCalendarInfo(
+            monthYearTitle = "Septiembre 2026",
+            days = buildList {
+                for (i in 28..31) add(MonthDay(dayNumber = i, isCurrentMonth = false))
+                for (i in 1..30) add(MonthDay(dayNumber = i, isCurrentMonth = true, isSelected = (i == 29)))
+                for (i in 1..8) add(MonthDay(dayNumber = i, isCurrentMonth = false))
+            },
+        ),
+        MonthCalendarInfo(
+            monthYearTitle = "Octubre 2026",
+            days = buildList {
+                for (i in 28..30) add(MonthDay(dayNumber = i, isCurrentMonth = false))
+                for (i in 1..31) add(MonthDay(dayNumber = i, isCurrentMonth = true, isSelected = (i == 5)))
+                for (i in 1..8) add(MonthDay(dayNumber = i, isCurrentMonth = false))
+            },
         ),
     )
 
@@ -158,7 +191,13 @@ class CalendarRepository {
 
     fun getAvailableWeeks(): List<WeekInfo> = availableWeeks
 
+    fun getAvailableMonths(): List<MonthCalendarInfo> = availableMonths
+
     fun getActivitiesForDay(dayNumber: Int): List<CalendarActivity> {
         return allActivities[dayNumber] ?: emptyList()
+    }
+
+    fun getActivitiesForGroupAndDay(groupId: Int, dayNumber: Int): List<CalendarActivity> {
+        return (allActivities[dayNumber] ?: emptyList()).filter { it.groupId == groupId }
     }
 }
