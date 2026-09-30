@@ -22,8 +22,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import mx.tec.crystalguard.ui.components.TopBar
+import mx.tec.crystalguard.ui.screens.AnnouncementsScreen
 import mx.tec.crystalguard.ui.screens.EducatorDashboardScreen
 import mx.tec.crystalguard.ui.screens.GroupDetailScreen
+import mx.tec.crystalguard.ui.state.AnnouncementsViewModel
 import mx.tec.crystalguard.ui.state.EducatorDashboardViewModel
 import mx.tec.crystalguard.ui.state.GroupDetailViewModel
 
@@ -44,12 +46,13 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
         Route.EDUCATOR_NOTIFICATIONS,
     )
 
-    // Rutas que muestran la BottomBar (incluyendo el detalle de grupo)
+    // Rutas que muestran la BottomBar (incluyendo detalle de grupo y anuncios)
     val bottomBarScreens: List<String> = listOf(
         Route.EDUCATOR_DASHBOARD,
         Route.EDUCATOR_CALENDAR,
         Route.EDUCATOR_NOTIFICATIONS,
         Route.GROUP_DETAIL,
+        Route.ANNOUNCEMENTS,
     )
 
     val backStackEntry by nav.currentBackStackEntryAsState()
@@ -94,7 +97,8 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                 NavigationBar {
                     visibleNavItems.forEach { item ->
                         val selected = currentRoute == item.route ||
-                                (item.route == Route.EDUCATOR_DASHBOARD && currentRoute == Route.GROUP_DETAIL)
+                                (item.route == Route.EDUCATOR_DASHBOARD &&
+                                        (currentRoute == Route.GROUP_DETAIL || currentRoute == Route.ANNOUNCEMENTS))
                         NavigationBarItem(
                             selected = selected,
                             onClick = {
@@ -150,10 +154,37 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                     onBackClick = { nav.popBackStack() },
                     onItemClick = { item ->
                         viewModel.onItemClick(item) { route ->
-                            // nav.navigate(route) // Se puede descomentar cuando existan las pantallas
+                            try {
+                                nav.navigate(route)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
                         }
                     },
                     onReintentar = { viewModel.cargarGrupo(groupId) },
+                )
+            }
+
+            composable(Route.ANNOUNCEMENTS) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: AnnouncementsViewModel = viewModel()
+
+                LaunchedEffect(groupId) {
+                    viewModel.cargar(groupId)
+                }
+
+                AnnouncementsScreen(
+                    uiState = viewModel.uiState,
+                    onBackClick = { nav.popBackStack() },
+                    onAbrirCrearClick = { viewModel.abrirDialogoCrear() },
+                    onCerrarCrearClick = { viewModel.cerrarDialogoCrear() },
+                    onPublicarAnuncioClick = { titulo, contenido ->
+                        viewModel.publicarAnuncioPersonalizado(titulo, contenido)
+                    },
+                    onAnuncioClick = { anuncio -> viewModel.seleccionarAnuncio(anuncio) },
+                    onReintentar = { viewModel.cargar(groupId) },
                 )
             }
 

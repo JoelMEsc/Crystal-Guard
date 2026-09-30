@@ -25,7 +25,7 @@ data class GroupDetailUiState(
 )
 
 class GroupDetailViewModel(
-    private val repository: CrystalGuardRepository = CrystalGuardRepository(),
+    private val repository: CrystalGuardRepository = CrystalGuardRepository.instance,
 ) : ViewModel() {
 
     var uiState by mutableStateOf(GroupDetailUiState())
@@ -60,15 +60,11 @@ class GroupDetailViewModel(
     fun onItemClick(item: SelectionItemData, onNavigate: (String) -> Unit) {
         val groupId = uiState.group?.id ?: return
         val targetRoute = when (item.id) {
-            1 -> Route.classMaterial(groupId)
-            2 -> Route.attendance(groupId)
-            3 -> Route.announcements(groupId)
-            4 -> Route.bitacora(groupId)
-            5 -> Route.galery(groupId)
-            6 -> Route.galery(groupId)
-            7 -> Route.calendar(groupId)
-            else -> return
+            3 -> Route.announcements(groupId) // Solo 'Anuncios' está implementado por ahora
+            else -> null // Las demás opciones aún no tienen pantalla en NavHost
         }
-        onNavigate(targetRoute)
+        if (targetRoute != null) {
+            onNavigate(targetRoute)
+        }
     }
 }
