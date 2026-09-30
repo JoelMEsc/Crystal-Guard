@@ -15,13 +15,13 @@ import androidx.navigation.compose.rememberNavController
 import mx.tec.crystalguard.ui.components.BottomNavBar
 import mx.tec.crystalguard.ui.components.SecondaryTopBar
 import mx.tec.crystalguard.ui.components.TopBar
-import mx.tec.crystalguard.ui.components.VacioView
 import mx.tec.crystalguard.ui.screens.AnnouncementsScreen
 import mx.tec.crystalguard.ui.screens.AttendanceScreen
 import mx.tec.crystalguard.ui.screens.BitacoraScreen
 import mx.tec.crystalguard.ui.screens.ClassMaterialScreen
 import mx.tec.crystalguard.ui.screens.EducatorCalendarScreen
 import mx.tec.crystalguard.ui.screens.EducatorDashboardScreen
+import mx.tec.crystalguard.ui.screens.EducatorNotificationsScreen
 import mx.tec.crystalguard.ui.screens.GalleryScreen
 import mx.tec.crystalguard.ui.screens.GroupCalendarScreen
 import mx.tec.crystalguard.ui.screens.GroupDetailScreen
@@ -33,6 +33,7 @@ import mx.tec.crystalguard.ui.state.BitacoraViewModel
 import mx.tec.crystalguard.ui.state.ClassMaterialViewModel
 import mx.tec.crystalguard.ui.state.EducatorCalendarViewModel
 import mx.tec.crystalguard.ui.state.EducatorDashboardViewModel
+import mx.tec.crystalguard.ui.state.EducatorNotificationsViewModel
 import mx.tec.crystalguard.ui.state.GalleryViewModel
 import mx.tec.crystalguard.ui.state.GroupCalendarViewModel
 import mx.tec.crystalguard.ui.state.GroupDetailViewModel
@@ -290,7 +291,11 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
             }
 
             composable(Route.EDUCATOR_NOTIFICATIONS) {
-                VacioView(mensaje = "Pantalla de Notificaciones en construcción.")
+                val viewModel: EducatorNotificationsViewModel = viewModel()
+
+                EducatorNotificationsScreen(
+                    viewModel = viewModel,
+                )
             }
         }
     }
