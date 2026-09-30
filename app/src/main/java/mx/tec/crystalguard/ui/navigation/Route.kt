@@ -15,6 +15,8 @@ object Route {
     const val PEOPLE = "people/{groupId}"
     const val CALENDAR = "calendar/{groupId}"
 
+    const val STUDENT_DETAIL = "studentDetail/{studentId}"
+
     fun detail(id: Int) = "detail/$id"
 
     fun classMaterial(groupId: Int) = "classMaterial/$groupId"
@@ -24,4 +26,6 @@ object Route {
     fun galery(groupId: Int) = "galery/$groupId"
     fun people(groupId: Int) = "people/$groupId"
     fun calendar(groupId: Int) = "calendar/$groupId"
+
+    fun studentDetail(studentId: Int) = "studentDetail/$studentId"
 }

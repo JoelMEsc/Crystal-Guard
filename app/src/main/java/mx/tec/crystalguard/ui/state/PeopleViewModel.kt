@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import mx.tec.crystalguard.data.PeopleRepository
 import mx.tec.crystalguard.domain.people.Educator
 import mx.tec.crystalguard.domain.people.Student
+import mx.tec.crystalguard.ui.navigation.Route
 
 data class PeopleUiState(
     val groupId: Int = 1,
@@ -36,8 +37,8 @@ class PeopleViewModel(
         )
     }
 
-    fun onStudentClick(student: Student) {
-        // Acción al presionar un estudiante
+    fun onStudentClick(student: Student, onNavigate: (String) -> Unit) {
+        onNavigate(Route.studentDetail(student.id))
     }
 
     fun onEducatorClick(educator: Educator) {

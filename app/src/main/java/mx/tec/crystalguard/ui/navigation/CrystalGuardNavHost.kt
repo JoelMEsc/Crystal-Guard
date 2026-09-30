@@ -25,6 +25,7 @@ import mx.tec.crystalguard.ui.screens.GalleryScreen
 import mx.tec.crystalguard.ui.screens.GroupCalendarScreen
 import mx.tec.crystalguard.ui.screens.GroupDetailScreen
 import mx.tec.crystalguard.ui.screens.PeopleScreen
+import mx.tec.crystalguard.ui.screens.StudentDetailScreen
 import mx.tec.crystalguard.ui.state.AnnouncementsViewModel
 import mx.tec.crystalguard.ui.state.AttendanceViewModel
 import mx.tec.crystalguard.ui.state.ClassMaterialViewModel
@@ -35,6 +36,7 @@ import mx.tec.crystalguard.ui.state.GroupCalendarViewModel
 import mx.tec.crystalguard.ui.state.GroupDetailViewModel
 import mx.tec.crystalguard.ui.state.NavigationViewModel
 import mx.tec.crystalguard.ui.state.PeopleViewModel
+import mx.tec.crystalguard.ui.state.StudentDetailViewModel
 
 @Composable
 fun CrystalGuardNavHost(onSalir: () -> Unit) {
@@ -62,6 +64,7 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
         currentRoute?.startsWith("bitacora/") == true || currentRoute == Route.BITACORA -> "Bitácora"
         currentRoute?.startsWith("galery") == true || currentRoute == Route.GALERIA -> "Galería"
         currentRoute?.startsWith("people/") == true || currentRoute == Route.PEOPLE -> "Personas"
+        currentRoute?.startsWith("studentDetail/") == true || currentRoute == Route.STUDENT_DETAIL -> "Detalles del Alumno"
         else -> "Detalle"
     }
 
@@ -241,6 +244,22 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                 }
 
                 PeopleScreen(
+                    viewModel = viewModel,
+                    onNavigate = { route -> nav.navigateSingle(route) },
+                )
+            }
+
+            composable(Route.STUDENT_DETAIL) { entry: NavBackStackEntry ->
+                val studentIdStr = entry.arguments?.getString("studentId")
+                val studentId = studentIdStr?.toIntOrNull() ?: 101
+
+                val viewModel: StudentDetailViewModel = viewModel()
+
+                LaunchedEffect(studentId) {
+                    viewModel.cargarDetalleEstudiante(studentId)
+                }
+
+                StudentDetailScreen(
                     viewModel = viewModel,
                 )
             }

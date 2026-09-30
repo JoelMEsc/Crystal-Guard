@@ -26,11 +26,12 @@ import mx.tec.crystalguard.ui.theme.CrystalGuardTheme
 @Composable
 fun PeopleScreen(
     viewModel: PeopleViewModel,
+    onNavigate: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     PeopleContent(
         uiState = viewModel.uiState,
-        onStudentClick = viewModel::onStudentClick,
+        onStudentClick = { student -> viewModel.onStudentClick(student, onNavigate) },
         onEducatorClick = viewModel::onEducatorClick,
         modifier = modifier,
     )
