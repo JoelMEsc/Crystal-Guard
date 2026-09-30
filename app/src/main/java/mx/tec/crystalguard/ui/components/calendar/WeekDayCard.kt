@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -49,7 +49,7 @@ fun WeekDayCard(
     Card(
         onClick = onClick,
         modifier = modifier
-            .width(48.dp)
+            .widthIn(min = 40.dp, max = 64.dp)
             .height(68.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
@@ -96,7 +96,7 @@ private fun WeekDayCardPreview() {
             val sampleDays = listOf(
                 WeekDay(letter = "J", number = 28, isSelected = false),
                 WeekDay(letter = "V", number = 29, isSelected = true),
-                WeekDay(letter = "S", number = 30, isSelected = false)
+                WeekDay(letter = "S", number = 30, isSelected = false),
             )
             sampleDays.forEach { day ->
                 WeekDayCard(day = day, onClick = {})
