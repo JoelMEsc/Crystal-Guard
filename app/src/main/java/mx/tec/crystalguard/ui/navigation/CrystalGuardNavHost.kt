@@ -3,9 +3,11 @@ package mx.tec.crystalguard.ui.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -17,11 +19,21 @@ import mx.tec.crystalguard.ui.screens.EducatorDashboardScreen
 import mx.tec.crystalguard.ui.state.EducatorCalendarViewModel
 import mx.tec.crystalguard.ui.state.EducatorDashboardViewModel
 import mx.tec.crystalguard.ui.state.NavigationViewModel
+import mx.tec.crystalguard.ui.screens.GroupDetailScreen
+import mx.tec.crystalguard.ui.state.GroupDetailViewModel
 
 @Composable
 fun CrystalGuardNavHost(onSalir: () -> Unit) {
     val nav = rememberNavController()
     val navViewModel: NavigationViewModel = viewModel()
+
+    // Rutas que muestran la BottomBar (incluyendo el detalle de grupo)
+    val bottomBarScreens: List<String> = listOf(
+        Route.EDUCATOR_DASHBOARD,
+        Route.EDUCATOR_CALENDAR,
+        Route.EDUCATOR_NOTIFICATIONS,
+        Route.GROUP_DETAIL,
+    )
 
     val backStackEntry by nav.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -73,6 +85,28 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                 EducatorDashboardScreen(
                     groups = viewModel.groups,
                     onClick = { id -> nav.navigate(Route.detail(id)) },
+                )
+            }
+
+            composable(Route.GROUP_DETAIL) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: GroupDetailViewModel = viewModel()
+
+                LaunchedEffect(groupId) {
+                    viewModel.cargarGrupo(groupId)
+                }
+
+                GroupDetailScreen(
+                    uiState = viewModel.uiState,
+                    onBackClick = { nav.popBackStack() },
+                    onItemClick = { item ->
+                        viewModel.onItemClick(item) { route ->
+                            // nav.navigate(route) // Se puede descomentar cuando existan las pantallas
+                        }
+                    },
+                    onReintentar = { viewModel.cargarGrupo(groupId) },
                 )
             }
 

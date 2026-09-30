@@ -7,5 +7,19 @@ object Route {
 
     const val GROUP_DETAIL = "detail/{groupId}"
 
+    const val CLASS_MATERIAL = "classMaterial/{groupId}"
+    const val ATTENDANCE = "attendance/{groupId}"
+    const val ANNOUNCEMENTS = "announcements/{groupId}"
+    const val BITACORA = "bitacora/{groupId}"
+    const val GALERIA = "galery/{groupId}"
+    const val CALENDAR = "calendar/{groupId}"
+
     fun detail(id: Int) = "detail/$id"
+
+    fun classMaterial(groupId: Int) = "classMaterial/$groupId"
+    fun attendance(groupId: Int) = "attendance/$groupId"
+    fun announcements(groupId: Int) = "announcements/$groupId"
+    fun bitacora(groupId: Int) = "bitacora/$groupId"
+    fun galery(groupId: Int) = "galery/$groupId"
+    fun calendar(groupId: Int) = "calendar/$groupId"
 }
