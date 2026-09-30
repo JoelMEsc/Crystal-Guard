@@ -12,6 +12,7 @@ object Route {
     const val ANNOUNCEMENTS = "announcements/{groupId}"
     const val BITACORA = "bitacora/{groupId}"
     const val GALERIA = "galery/{groupId}"
+    const val PEOPLE = "people/{groupId}"
     const val CALENDAR = "calendar/{groupId}"
 
     fun detail(id: Int) = "detail/$id"
@@ -21,5 +22,6 @@ object Route {
     fun announcements(groupId: Int) = "announcements/$groupId"
     fun bitacora(groupId: Int) = "bitacora/$groupId"
     fun galery(groupId: Int) = "galery/$groupId"
+    fun people(groupId: Int) = "people/$groupId"
     fun calendar(groupId: Int) = "calendar/$groupId"
 }

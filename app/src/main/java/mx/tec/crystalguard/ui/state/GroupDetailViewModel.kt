@@ -65,7 +65,7 @@ class GroupDetailViewModel(
             3 -> Route.announcements(groupId)
             4 -> Route.bitacora(groupId)
             5 -> Route.galery(groupId)
-            6 -> Route.galery(groupId)
+            6 -> Route.people(groupId)
             7 -> Route.calendar(groupId)
             else -> return
         }

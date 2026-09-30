@@ -24,8 +24,10 @@ import androidx.navigation.compose.rememberNavController
 import mx.tec.crystalguard.ui.components.TopBar
 import mx.tec.crystalguard.ui.screens.EducatorDashboardScreen
 import mx.tec.crystalguard.ui.screens.GroupDetailScreen
+import mx.tec.crystalguard.ui.screens.PeopleScreen
 import mx.tec.crystalguard.ui.state.EducatorDashboardViewModel
 import mx.tec.crystalguard.ui.state.GroupDetailViewModel
+import mx.tec.crystalguard.ui.state.PeopleViewModel
 
 private data class NavItem(
     val route: String,
@@ -150,10 +152,27 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                     onBackClick = { nav.popBackStack() },
                     onItemClick = { item ->
                         viewModel.onItemClick(item) { route ->
-                            // nav.navigate(route) // Se puede descomentar cuando existan las pantallas
+                            nav.navigate(route)
                         }
                     },
                     onReintentar = { viewModel.cargarGrupo(groupId) },
+                )
+            }
+
+            composable(Route.PEOPLE) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: PeopleViewModel = viewModel()
+
+                LaunchedEffect(groupId) {
+                    viewModel.cargarPersonas(groupId)
+                }
+
+                PeopleScreen(
+                    uiState = viewModel.uiState,
+                    onBackClick = { nav.popBackStack() },
+                    onReintentar = { viewModel.cargarPersonas(groupId) },
                 )
             }
 
