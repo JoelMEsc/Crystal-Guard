@@ -55,8 +55,8 @@ fun LoginScreen(
             Spacer(Modifier.height(16.dp))
 
             Text(
-                text = "Crystal Guard",
-                style = MaterialTheme.typography.headlineLarge,
+                text = "Fundación Estancias Infantiles",
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
             )
