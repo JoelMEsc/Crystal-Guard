@@ -12,7 +12,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import mx.tec.crystalguard.ui.components.BottomNavBar
 import mx.tec.crystalguard.ui.components.TopBar
+import mx.tec.crystalguard.ui.screens.EducatorCalendarScreen
 import mx.tec.crystalguard.ui.screens.EducatorDashboardScreen
+import mx.tec.crystalguard.ui.state.EducatorCalendarViewModel
 import mx.tec.crystalguard.ui.state.EducatorDashboardViewModel
 import mx.tec.crystalguard.ui.state.NavigationViewModel
 
@@ -25,7 +27,7 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
     val currentRoute = backStackEntry?.destination?.route
     val showTopBar = currentRoute in navViewModel.educatorTopBarScreens
 
-    val currentRouteFormated = when (val current = currentRoute) {
+    val currentRouteFormated = when (currentRoute) {
         "educatorDashboard" -> "Tablero"
         "educatorCalendar" -> "Calendario"
         "educatorNotificacions" -> "Notificaciones"
@@ -75,7 +77,11 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
             }
 
             composable(Route.EDUCATOR_CALENDAR) {
-                // Pantalla futura
+                val viewModel: EducatorCalendarViewModel = viewModel()
+
+                EducatorCalendarScreen(
+                    viewModel = viewModel,
+                )
             }
 
             composable(Route.EDUCATOR_NOTIFICATIONS) {
