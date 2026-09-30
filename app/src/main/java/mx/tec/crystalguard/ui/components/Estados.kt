@@ -26,7 +26,8 @@ fun CargandoView(modifier: Modifier = Modifier) {
         CircularProgressIndicator()
     }
 }
-
+//Comentario para subirlo a Development
+//Hay mejores metodos...
 @Composable
 fun ErrorView(mensaje: String, onReintentar: () -> Unit, modifier: Modifier = Modifier) {
     Column(

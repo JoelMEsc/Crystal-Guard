@@ -25,11 +25,13 @@ data class GroupDetailUiState(
 )
 
 class GroupDetailViewModel(
-    private val repository: CrystalGuardRepository = CrystalGuardRepository(),
+    private val repository: CrystalGuardRepository = CrystalGuardRepository,
 ) : ViewModel() {
 
     var uiState by mutableStateOf(GroupDetailUiState())
         private set
+
+    private var lastNavTime = 0L
 
     fun cargarGrupo(groupId: Int) {
         uiState = uiState.copy(isLoading = true)
@@ -58,6 +60,11 @@ class GroupDetailViewModel(
     }
 
     fun onItemClick(item: SelectionItemData, onNavigate: (String) -> Unit) {
+        val currentTime = System.currentTimeMillis()
+        if ((currentTime - lastNavTime) < 800L) {
+            return
+        }
+
         val groupId = uiState.group?.id ?: return
         val targetRoute = when (item.id) {
             1 -> Route.classMaterial(groupId)
@@ -65,10 +72,13 @@ class GroupDetailViewModel(
             3 -> Route.announcements(groupId)
             4 -> Route.bitacora(groupId)
             5 -> Route.galery(groupId)
-            6 -> Route.galery(groupId)
+            6 -> Route.people(groupId)
             7 -> Route.calendar(groupId)
-            else -> return
+            else -> null
         }
-        onNavigate(targetRoute)
+        if (targetRoute != null) {
+            lastNavTime = currentTime
+            onNavigate(targetRoute)
+        }
     }
 }

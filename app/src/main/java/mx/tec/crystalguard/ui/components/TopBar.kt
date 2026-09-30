@@ -34,6 +34,7 @@ fun TopBar(
     subtitle: String? = null,
     onProfileClick: () -> Unit = {},
     onBackClick: (() -> Unit)? = null,
+    onMenuClick: () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
         title = {

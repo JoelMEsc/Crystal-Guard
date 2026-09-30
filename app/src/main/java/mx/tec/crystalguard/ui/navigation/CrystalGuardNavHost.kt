@@ -17,13 +17,19 @@ import mx.tec.crystalguard.ui.components.SecondaryTopBar
 import mx.tec.crystalguard.ui.components.TopBar
 import mx.tec.crystalguard.ui.components.VacioView
 import mx.tec.crystalguard.ui.screens.ClassMaterialScreen
+import mx.tec.crystalguard.ui.screens.AnnouncementsScreen
+import mx.tec.crystalguard.ui.screens.AttendanceScreen
 import mx.tec.crystalguard.ui.screens.EducatorCalendarScreen
 import mx.tec.crystalguard.ui.screens.EducatorDashboardScreen
+import mx.tec.crystalguard.ui.screens.GalleryScreen
 import mx.tec.crystalguard.ui.screens.GroupCalendarScreen
 import mx.tec.crystalguard.ui.screens.GroupDetailScreen
 import mx.tec.crystalguard.ui.state.ClassMaterialViewModel
+import mx.tec.crystalguard.ui.state.AnnouncementsViewModel
+import mx.tec.crystalguard.ui.state.AttendanceViewModel
 import mx.tec.crystalguard.ui.state.EducatorCalendarViewModel
 import mx.tec.crystalguard.ui.state.EducatorDashboardViewModel
+import mx.tec.crystalguard.ui.state.GalleryViewModel
 import mx.tec.crystalguard.ui.state.GroupCalendarViewModel
 import mx.tec.crystalguard.ui.state.GroupDetailViewModel
 import mx.tec.crystalguard.ui.state.NavigationViewModel
@@ -52,7 +58,8 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
         currentRoute?.startsWith("attendance/") == true || currentRoute == Route.ATTENDANCE -> "Pase de Lista"
         currentRoute?.startsWith("announcements/") == true || currentRoute == Route.ANNOUNCEMENTS -> "Anuncios"
         currentRoute?.startsWith("bitacora/") == true || currentRoute == Route.BITACORA -> "Bitácora"
-        currentRoute?.startsWith("galery/") == true || currentRoute == Route.GALERIA -> "Galería y Personas"
+        currentRoute?.startsWith("galery") == true || currentRoute == Route.GALERIA -> "Galería"
+        currentRoute?.startsWith("people/") == true || currentRoute == Route.PEOPLE -> "Personas"
         else -> "Detalle"
     }
 
@@ -99,7 +106,7 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
 
                 EducatorDashboardScreen(
                     groups = viewModel.groups,
-                    onClick = { id -> nav.navigate(Route.detail(id)) },
+                    onClick = { id -> nav.navigateSingle(Route.detail(id)) },
                 )
             }
 
@@ -155,20 +162,78 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                 )
             }
 
-            composable(Route.ATTENDANCE) {
-                VacioView(mensaje = "Pantalla de Pase de Lista en construcción.")
+            composable(Route.ATTENDANCE) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: AttendanceViewModel = viewModel()
+
+                LaunchedEffect(groupId) {
+                    viewModel.cargar(groupId)
+                }
+
+                AttendanceScreen(
+                    uiState = viewModel.uiState,
+                    onBackClick = { nav.popBackStack() },
+                    onToggleLlego = { id -> viewModel.toggleLlego(id) },
+                    onToggleSeFue = { id -> viewModel.toggleSeFue(id) },
+                    onToggleNoAsistio = { id -> viewModel.toggleNoAsistio(id) },
+                    onDejoSelected = { id, persona -> viewModel.actualizarDejoPersona(id, persona) },
+                    onRecogioSelected = { id, persona -> viewModel.actualizarRecogioPersona(id, persona) },
+                    onToggleEditarClick = { viewModel.toggleModoEdicion() },
+                    onGuardarClick = { viewModel.guardarCambios() },
+                    onLimpiarMensaje = { viewModel.limpiarMensajes() },
+                    onReintentar = { viewModel.cargar(groupId) },
+                )
             }
 
-            composable(Route.ANNOUNCEMENTS) {
-                VacioView(mensaje = "Pantalla de Anuncios en construcción.")
+            composable(Route.ANNOUNCEMENTS) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: AnnouncementsViewModel = viewModel()
+
+                LaunchedEffect(groupId) {
+                    viewModel.cargar(groupId)
+                }
+
+                AnnouncementsScreen(
+                    uiState = viewModel.uiState,
+                    onBackClick = { nav.popBackStack() },
+                    onAbrirCrearClick = { viewModel.abrirDialogoCrear() },
+                    onCerrarCrearClick = { viewModel.cerrarDialogoCrear() },
+                    onPublicarAnuncioClick = { titulo, contenido ->
+                        viewModel.publicarAnuncioPersonalizado(titulo, contenido)
+                    },
+                    onAnuncioClick = { anuncio -> viewModel.seleccionarAnuncio(anuncio) },
+                    onReintentar = { viewModel.cargar(groupId) },
+                )
+            }
+
+            composable(Route.GALERIA) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: GalleryViewModel = viewModel()
+
+                LaunchedEffect(groupId) {
+                    viewModel.cargar(groupId)
+                }
+
+                GalleryScreen(
+                    uiState = viewModel.uiState,
+                    onBackClick = { nav.popBackStack() },
+                    onImageClick = { image -> viewModel.seleccionarImagen(image) },
+                    onReintentar = { viewModel.cargar(groupId) },
+                )
+            }
+
+            composable(Route.PEOPLE) {
+                VacioView(mensaje = "Pantalla de Personas en construcción.")
             }
 
             composable(Route.BITACORA) {
                 VacioView(mensaje = "Pantalla de Bitácora en construcción.")
-            }
-
-            composable(Route.GALERIA) {
-                VacioView(mensaje = "Pantalla de Galería en construcción.")
             }
 
             composable(Route.EDUCATOR_CALENDAR) {
