@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.People
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +50,7 @@ class GroupDetailViewModel(
                     SelectionItemData(5, "Galería", Icons.Filled.Collections),
                     SelectionItemData(6, "Personas", Icons.Filled.People),
                     SelectionItemData(7, "Calendario", Icons.Filled.CalendarMonth),
+                    SelectionItemData(8, "Notificaciones", Icons.Filled.Notifications),
                 ),
             )
         } else {
@@ -74,6 +76,7 @@ class GroupDetailViewModel(
             5 -> Route.galery(groupId)
             6 -> Route.people(groupId)
             7 -> Route.calendar(groupId)
+            8 -> Route.notifications(groupId)
             else -> null
         }
         if (targetRoute != null) {

@@ -236,6 +236,10 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                 VacioView(mensaje = "Pantalla de Bitácora en construcción.")
             }
 
+            composable(Route.NOTIFICATIONS) {
+                mx.tec.crystalguard.ui.screens.NotificationsScreen()
+            }
+
             composable(Route.EDUCATOR_CALENDAR) {
                 val viewModel: EducatorCalendarViewModel = viewModel()
 
