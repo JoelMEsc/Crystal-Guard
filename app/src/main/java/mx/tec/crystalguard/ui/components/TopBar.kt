@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import mx.tec.crystalguard.ui.theme.CrystalGuardTheme
-//Test
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
@@ -34,6 +34,7 @@ fun TopBar(
     subtitle: String? = null,
     onProfileClick: () -> Unit = {},
     onBackClick: (() -> Unit)? = null,
+    onMenuClick: () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
         title = {
