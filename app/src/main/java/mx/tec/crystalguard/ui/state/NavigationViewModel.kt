@@ -35,7 +35,6 @@ class NavigationViewModel : ViewModel() {
     var uiState by mutableStateOf(NavigationUiState())
         private set
 
-    // Lista de rutas que muestran TopBar
     val educatorTopBarScreens: List<String> = listOf(
         Route.EDUCATOR_DASHBOARD,
         Route.EDUCATOR_CALENDAR,

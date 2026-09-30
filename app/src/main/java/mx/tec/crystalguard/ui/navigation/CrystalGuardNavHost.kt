@@ -13,46 +13,50 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import mx.tec.crystalguard.ui.components.BottomNavBar
+import mx.tec.crystalguard.ui.components.SecondaryTopBar
 import mx.tec.crystalguard.ui.components.TopBar
 import mx.tec.crystalguard.ui.screens.EducatorCalendarScreen
 import mx.tec.crystalguard.ui.screens.EducatorDashboardScreen
+import mx.tec.crystalguard.ui.screens.GroupDetailScreen
 import mx.tec.crystalguard.ui.state.EducatorCalendarViewModel
 import mx.tec.crystalguard.ui.state.EducatorDashboardViewModel
-import mx.tec.crystalguard.ui.state.NavigationViewModel
-import mx.tec.crystalguard.ui.screens.GroupDetailScreen
 import mx.tec.crystalguard.ui.state.GroupDetailViewModel
+import mx.tec.crystalguard.ui.state.NavigationViewModel
 
 @Composable
 fun CrystalGuardNavHost(onSalir: () -> Unit) {
     val nav = rememberNavController()
     val navViewModel: NavigationViewModel = viewModel()
 
-    // Rutas que muestran la BottomBar (incluyendo el detalle de grupo)
-    val bottomBarScreens: List<String> = listOf(
-        Route.EDUCATOR_DASHBOARD,
-        Route.EDUCATOR_CALENDAR,
-        Route.EDUCATOR_NOTIFICATIONS,
-        Route.GROUP_DETAIL,
-    )
-
     val backStackEntry by nav.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
-    val showTopBar = currentRoute in navViewModel.educatorTopBarScreens
 
-    val currentRouteFormated = when (currentRoute) {
-        "educatorDashboard" -> "Tablero"
-        "educatorCalendar" -> "Calendario"
-        "educatorNotificacions" -> "Notificaciones"
+    val isMainScreen = currentRoute in navViewModel.educatorTopBarScreens
+
+    val mainScreenSubtitle = when (currentRoute) {
+        Route.EDUCATOR_DASHBOARD -> "Tablero"
+        Route.EDUCATOR_CALENDAR -> "Calendario"
+        Route.EDUCATOR_NOTIFICATIONS -> "Notificaciones"
         else -> null
+    }
+
+    val secondaryScreenTitle = when {
+        currentRoute?.startsWith("detail") == true || currentRoute == Route.GROUP_DETAIL -> "Detalle del Grupo"
+        else -> "Detalle"
     }
 
     Scaffold(
         topBar = {
-            if (showTopBar) {
+            if (isMainScreen) {
                 TopBar(
                     title = "Crystal Guard",
-                    subtitle = currentRouteFormated,
+                    subtitle = mainScreenSubtitle,
                     onProfileClick = { /* Perfil */ },
+                )
+            } else {
+                SecondaryTopBar(
+                    title = secondaryScreenTitle,
+                    onBackClick = { nav.popBackStack() },
                 )
             }
         },
@@ -103,7 +107,7 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                     onBackClick = { nav.popBackStack() },
                     onItemClick = { item ->
                         viewModel.onItemClick(item) { route ->
-                            // nav.navigate(route) // Se puede descomentar cuando existan las pantallas
+                            // nav.navigate(route)
                         }
                     },
                     onReintentar = { viewModel.cargarGrupo(groupId) },

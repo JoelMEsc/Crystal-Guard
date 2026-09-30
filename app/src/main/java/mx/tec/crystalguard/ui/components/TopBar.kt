@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,11 +33,12 @@ fun TopBar(
     title: String = "Crystal Guard",
     subtitle: String? = null,
     onProfileClick: () -> Unit = {},
+    onBackClick: (() -> Unit)? = null,
 ) {
     CenterAlignedTopAppBar(
         title = {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     text = title,
@@ -55,7 +57,16 @@ fun TopBar(
             }
         },
         navigationIcon = {
-            Spacer(modifier = Modifier.size(48.dp))
+            if (onBackClick != null) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Volver",
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.size(48.dp))
+            }
         },
         actions = {
             IconButton(
@@ -85,12 +96,57 @@ fun TopBar(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SecondaryTopBar(
+    title: String,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Volver",
+                )
+            }
+        },
+        actions = {
+            Spacer(modifier = Modifier.size(48.dp))
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        modifier = modifier,
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun TopBarPreview() {
     CrystalGuardTheme {
         TopBar(
-            subtitle = "Dashboard"
+            subtitle = "Dashboard",
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SecondaryTopBarPreview() {
+    CrystalGuardTheme {
+        SecondaryTopBar(
+            title = "Detalle del Grupo",
+            onBackClick = {},
         )
     }
 }
