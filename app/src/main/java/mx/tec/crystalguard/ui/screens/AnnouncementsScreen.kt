@@ -1,20 +1,19 @@
 package mx.tec.crystalguard.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,45 +29,36 @@ import mx.tec.crystalguard.ui.components.AnnouncementCard
 import mx.tec.crystalguard.ui.components.CargandoView
 import mx.tec.crystalguard.ui.components.ErrorView
 import mx.tec.crystalguard.ui.components.PublicarAnuncioButton
-import mx.tec.crystalguard.ui.components.TopBar
 import mx.tec.crystalguard.ui.state.AnnouncementsUiState
 
 @Composable
 fun AnnouncementsScreen(
     uiState: AnnouncementsUiState,
-    onBackClick: () -> Unit,
     onAbrirCrearClick: () -> Unit,
     onCerrarCrearClick: () -> Unit,
     onPublicarAnuncioClick: (String, String) -> Unit,
     onAnuncioClick: (Announcement?) -> Unit,
     modifier: Modifier = Modifier,
+    onBackClick: () -> Unit = {},
     onReintentar: () -> Unit = {},
 ) {
-    Scaffold(
-        topBar = {
-            TopBar(
-                title = "Anuncios",
-                onBackClick = onBackClick,
-            )
-        },
-        modifier = modifier,
-    ) { padding ->
+    Box(
+        modifier = modifier.fillMaxSize(),
+    ) {
         when {
             uiState.isLoading -> {
-                CargandoView(modifier = Modifier.padding(padding))
+                CargandoView(modifier = Modifier.fillMaxSize())
             }
             uiState.errorMessage != null -> {
                 ErrorView(
                     mensaje = uiState.errorMessage,
                     onReintentar = onReintentar,
-                    modifier = Modifier.padding(padding),
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
             else -> {
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
+                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
@@ -91,7 +81,6 @@ fun AnnouncementsScreen(
             }
         }
 
-        // Diálogo para crear un nuevo aviso personalizado
         if (uiState.isCreandoAnuncio) {
             var titulo by remember { mutableStateOf("") }
             var contenido by remember { mutableStateOf("") }
@@ -145,7 +134,6 @@ fun AnnouncementsScreen(
             )
         }
 
-        // Diálogo para ver el detalle de un anuncio
         val selected = uiState.selectedAnnouncement
         if (selected != null) {
             AlertDialog(

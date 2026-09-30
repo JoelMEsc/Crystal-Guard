@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,43 +34,34 @@ import mx.tec.crystalguard.domain.GalleryImage
 import mx.tec.crystalguard.ui.components.CargandoView
 import mx.tec.crystalguard.ui.components.ErrorView
 import mx.tec.crystalguard.ui.components.GalleryImageCard
-import mx.tec.crystalguard.ui.components.TopBar
 import mx.tec.crystalguard.ui.state.GalleryUiState
 
 @Composable
 fun GalleryScreen(
     uiState: GalleryUiState,
-    onBackClick: () -> Unit,
     onImageClick: (GalleryImage?) -> Unit,
     modifier: Modifier = Modifier,
+    onBackClick: () -> Unit = {},
     onReintentar: () -> Unit = {},
 ) {
-    Scaffold(
-        topBar = {
-            TopBar(
-                title = "Galería del Grupo",
-                onBackClick = onBackClick,
-            )
-        },
-        modifier = modifier,
-    ) { padding ->
+    Box(
+        modifier = modifier.fillMaxSize(),
+    ) {
         when {
             uiState.isLoading -> {
-                CargandoView(modifier = Modifier.padding(padding))
+                CargandoView(modifier = Modifier.fillMaxSize())
             }
             uiState.errorMessage != null -> {
                 ErrorView(
                     mensaje = uiState.errorMessage,
                     onReintentar = onReintentar,
-                    modifier = Modifier.padding(padding),
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
             else -> {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
+                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -89,7 +79,6 @@ fun GalleryScreen(
             }
         }
 
-        // Vista de imagen en pantalla completa al seleccionar una foto
         val selected = uiState.selectedImage
         if (selected != null) {
             Dialog(
@@ -104,7 +93,6 @@ fun GalleryScreen(
                         .background(Color.Black)
                         .clickable { onImageClick(null) },
                 ) {
-                    // Imagen completa en el centro
                     Image(
                         painter = painterResource(id = selected.imageRes),
                         contentDescription = selected.title,
@@ -114,7 +102,6 @@ fun GalleryScreen(
                             .align(Alignment.Center),
                     )
 
-                    // Encabezado superior con título, fecha y botón de cerrar (X)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

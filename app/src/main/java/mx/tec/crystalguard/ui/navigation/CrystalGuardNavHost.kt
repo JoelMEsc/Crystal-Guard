@@ -15,24 +15,31 @@ import androidx.navigation.compose.rememberNavController
 import mx.tec.crystalguard.ui.components.BottomNavBar
 import mx.tec.crystalguard.ui.components.SecondaryTopBar
 import mx.tec.crystalguard.ui.components.TopBar
-import mx.tec.crystalguard.ui.components.VacioView
-import mx.tec.crystalguard.ui.screens.ClassMaterialScreen
 import mx.tec.crystalguard.ui.screens.AnnouncementsScreen
 import mx.tec.crystalguard.ui.screens.AttendanceScreen
+import mx.tec.crystalguard.ui.screens.BitacoraScreen
+import mx.tec.crystalguard.ui.screens.ClassMaterialScreen
 import mx.tec.crystalguard.ui.screens.EducatorCalendarScreen
 import mx.tec.crystalguard.ui.screens.EducatorDashboardScreen
+import mx.tec.crystalguard.ui.screens.EducatorNotificationsScreen
 import mx.tec.crystalguard.ui.screens.GalleryScreen
 import mx.tec.crystalguard.ui.screens.GroupCalendarScreen
 import mx.tec.crystalguard.ui.screens.GroupDetailScreen
-import mx.tec.crystalguard.ui.state.ClassMaterialViewModel
+import mx.tec.crystalguard.ui.screens.PeopleScreen
+import mx.tec.crystalguard.ui.screens.StudentDetailScreen
 import mx.tec.crystalguard.ui.state.AnnouncementsViewModel
 import mx.tec.crystalguard.ui.state.AttendanceViewModel
+import mx.tec.crystalguard.ui.state.BitacoraViewModel
+import mx.tec.crystalguard.ui.state.ClassMaterialViewModel
 import mx.tec.crystalguard.ui.state.EducatorCalendarViewModel
 import mx.tec.crystalguard.ui.state.EducatorDashboardViewModel
+import mx.tec.crystalguard.ui.state.EducatorNotificationsViewModel
 import mx.tec.crystalguard.ui.state.GalleryViewModel
 import mx.tec.crystalguard.ui.state.GroupCalendarViewModel
 import mx.tec.crystalguard.ui.state.GroupDetailViewModel
 import mx.tec.crystalguard.ui.state.NavigationViewModel
+import mx.tec.crystalguard.ui.state.PeopleViewModel
+import mx.tec.crystalguard.ui.state.StudentDetailViewModel
 
 @Composable
 fun CrystalGuardNavHost(onSalir: () -> Unit) {
@@ -57,9 +64,10 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
         currentRoute?.startsWith("classMaterial/") == true || currentRoute == Route.CLASS_MATERIAL -> "Material de Clase"
         currentRoute?.startsWith("attendance/") == true || currentRoute == Route.ATTENDANCE -> "Pase de Lista"
         currentRoute?.startsWith("announcements/") == true || currentRoute == Route.ANNOUNCEMENTS -> "Anuncios"
-        currentRoute?.startsWith("bitacora/") == true || currentRoute == Route.BITACORA -> "Bitácora"
+        currentRoute?.startsWith("bitacora/") == true || currentRoute == Route.BITACORA -> "Bitácora de Filtro Diario"
         currentRoute?.startsWith("galery") == true || currentRoute == Route.GALERIA -> "Galería"
         currentRoute?.startsWith("people/") == true || currentRoute == Route.PEOPLE -> "Personas"
+        currentRoute?.startsWith("studentDetail/") == true || currentRoute == Route.STUDENT_DETAIL -> "Detalles del Alumno"
         else -> "Detalle"
     }
 
@@ -228,12 +236,50 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                 )
             }
 
-            composable(Route.PEOPLE) {
-                VacioView(mensaje = "Pantalla de Personas en construcción.")
+            composable(Route.PEOPLE) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: PeopleViewModel = viewModel()
+
+                LaunchedEffect(groupId) {
+                    viewModel.cargarPersonas(groupId)
+                }
+
+                PeopleScreen(
+                    viewModel = viewModel,
+                    onNavigate = { route -> nav.navigateSingle(route) },
+                )
             }
 
-            composable(Route.BITACORA) {
-                VacioView(mensaje = "Pantalla de Bitácora en construcción.")
+            composable(Route.STUDENT_DETAIL) { entry: NavBackStackEntry ->
+                val studentIdStr = entry.arguments?.getString("studentId")
+                val studentId = studentIdStr?.toIntOrNull() ?: 101
+
+                val viewModel: StudentDetailViewModel = viewModel()
+
+                LaunchedEffect(studentId) {
+                    viewModel.cargarDetalleEstudiante(studentId)
+                }
+
+                StudentDetailScreen(
+                    viewModel = viewModel,
+                )
+            }
+
+            composable(Route.BITACORA) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: BitacoraViewModel = viewModel()
+
+                LaunchedEffect(groupId) {
+                    viewModel.cargarBitacora(groupId)
+                }
+
+                BitacoraScreen(
+                    viewModel = viewModel,
+                )
             }
 
             composable(Route.EDUCATOR_CALENDAR) {
@@ -245,7 +291,11 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
             }
 
             composable(Route.EDUCATOR_NOTIFICATIONS) {
-                VacioView(mensaje = "Pantalla de Notificaciones en construcción.")
+                val viewModel: EducatorNotificationsViewModel = viewModel()
+
+                EducatorNotificationsScreen(
+                    viewModel = viewModel,
+                )
             }
         }
     }

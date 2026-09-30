@@ -31,7 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -45,13 +44,11 @@ import androidx.compose.ui.unit.dp
 import mx.tec.crystalguard.ui.components.CargandoView
 import mx.tec.crystalguard.ui.components.ErrorView
 import mx.tec.crystalguard.ui.components.StudentAttendanceCard
-import mx.tec.crystalguard.ui.components.TopBar
 import mx.tec.crystalguard.ui.state.AttendanceUiState
 
 @Composable
 fun AttendanceScreen(
     uiState: AttendanceUiState,
-    onBackClick: () -> Unit,
     onToggleLlego: (Int) -> Unit,
     onToggleSeFue: (Int) -> Unit,
     onToggleNoAsistio: (Int) -> Unit,
@@ -61,33 +58,26 @@ fun AttendanceScreen(
     onGuardarClick: () -> Unit,
     onLimpiarMensaje: () -> Unit,
     modifier: Modifier = Modifier,
+    onBackClick: () -> Unit = {},
     onReintentar: () -> Unit = {},
 ) {
-    Scaffold(
-        topBar = {
-            TopBar(
-                title = "Pase de Lista",
-                onBackClick = onBackClick,
-            )
-        },
-        modifier = modifier,
-    ) { padding ->
+    Box(
+        modifier = modifier.fillMaxSize(),
+    ) {
         when {
             uiState.isLoading -> {
-                CargandoView(modifier = Modifier.padding(padding))
+                CargandoView(modifier = Modifier.fillMaxSize())
             }
             uiState.errorMessage != null -> {
                 ErrorView(
                     mensaje = uiState.errorMessage,
                     onReintentar = onReintentar,
-                    modifier = Modifier.padding(padding),
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
             else -> {
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
+                    modifier = Modifier.fillMaxSize(),
                 ) {
                     LazyColumn(
                         modifier = Modifier
@@ -96,14 +86,12 @@ fun AttendanceScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        // Tarjeta superior de fecha
                         item {
                             DateHeaderCard(
                                 dateText = uiState.dateText,
                             )
                         }
 
-                        // Lista de alumnos con pase de lista
                         items(
                             items = uiState.students,
                             key = { student -> student.id },
@@ -120,7 +108,6 @@ fun AttendanceScreen(
                         }
                     }
 
-                    // Botones inferiores de Editar y Guardar
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -128,7 +115,6 @@ fun AttendanceScreen(
                             .padding(16.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        // Botón Editar
                         OutlinedButton(
                             onClick = onToggleEditarClick,
                             modifier = Modifier
@@ -148,7 +134,6 @@ fun AttendanceScreen(
                             )
                         }
 
-                        // Botón Guardar
                         Button(
                             onClick = onGuardarClick,
                             modifier = Modifier
@@ -176,7 +161,6 @@ fun AttendanceScreen(
             }
         }
 
-        // Diálogo de confirmación al guardar exitoso
         val exito = uiState.mensajeExito
         if (exito != null) {
             AlertDialog(
@@ -191,7 +175,6 @@ fun AttendanceScreen(
             )
         }
 
-        // Diálogo de advertencia (p.ej. falta tutor o intentó marcar salida sin entrada)
         val advertencia = uiState.mensajeAdvertencia
         if (advertencia != null) {
             AlertDialog(
@@ -227,7 +210,7 @@ private fun DateHeaderCard(
                 .padding(horizontal = 8.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconButton(onClick = { /* Anterior día */ }) {
+            IconButton(onClick = { }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                     contentDescription = "Día anterior",
@@ -243,7 +226,7 @@ private fun DateHeaderCard(
                 modifier = Modifier.weight(1f),
             )
 
-            IconButton(onClick = { /* Siguiente día */ }) {
+            IconButton(onClick = { }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = "Día siguiente",
