@@ -71,7 +71,7 @@ class GroupDetailViewModel(
             2 -> Route.attendance(groupId) // Pase de lista
             3 -> Route.announcements(groupId) // Anuncios
             5 -> Route.galery(groupId) // Galería
-            else -> null
+            else -> null // Desvinculado del calendario general por ahora
         }
         if (targetRoute != null) {
             lastNavTime = currentTime
