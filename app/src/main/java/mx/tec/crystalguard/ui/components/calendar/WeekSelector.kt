@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,14 +23,21 @@ fun WeekSelector(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        week.forEach { day ->
-            WeekDayCard(
-                day = day,
-                onClick = { onDayClick(day) },
-            )
+        Row(
+            modifier = Modifier.widthIn(max = 520.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            week.forEach { day ->
+                WeekDayCard(
+                    day = day,
+                    onClick = { onDayClick(day) },
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+            }
         }
     }
 }
@@ -44,12 +52,12 @@ private fun WeekSelectorPreview() {
         WeekDay(letter = "J", number = 1, isSelected = false),
         WeekDay(letter = "V", number = 2, isSelected = false),
         WeekDay(letter = "S", number = 3, isSelected = false),
-        WeekDay(letter = "D", number = 4, isSelected = false)
+        WeekDay(letter = "D", number = 4, isSelected = false),
     )
     CrystalGuardTheme {
         WeekSelector(
             week = sampleWeek,
-            onDayClick = {},
+            onDayClick = { },
         )
     }
 }
