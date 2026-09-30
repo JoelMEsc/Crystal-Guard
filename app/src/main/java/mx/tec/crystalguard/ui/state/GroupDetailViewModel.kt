@@ -61,17 +61,20 @@ class GroupDetailViewModel(
 
     fun onItemClick(item: SelectionItemData, onNavigate: (String) -> Unit) {
         val currentTime = System.currentTimeMillis()
-        // Evita que toques multifinger o clics veloces abran múltiples pantallas
         if ((currentTime - lastNavTime) < 800L) {
             return
         }
 
         val groupId = uiState.group?.id ?: return
         val targetRoute = when (item.id) {
-            2 -> Route.attendance(groupId) // Pase de lista
-            3 -> Route.announcements(groupId) // Anuncios
-            5 -> Route.galery(groupId) // Galería
-            else -> null // Desvinculado del calendario general por ahora
+            1 -> Route.classMaterial(groupId)
+            2 -> Route.attendance(groupId)
+            3 -> Route.announcements(groupId)
+            4 -> Route.bitacora(groupId)
+            5 -> Route.galery(groupId)
+            6 -> Route.people(groupId)
+            7 -> Route.calendar(groupId)
+            else -> null
         }
         if (targetRoute != null) {
             lastNavTime = currentTime

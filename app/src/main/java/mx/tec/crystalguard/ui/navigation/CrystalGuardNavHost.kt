@@ -15,17 +15,22 @@ import androidx.navigation.compose.rememberNavController
 import mx.tec.crystalguard.ui.components.BottomNavBar
 import mx.tec.crystalguard.ui.components.SecondaryTopBar
 import mx.tec.crystalguard.ui.components.TopBar
+import mx.tec.crystalguard.ui.components.VacioView
+import mx.tec.crystalguard.ui.screens.ClassMaterialScreen
 import mx.tec.crystalguard.ui.screens.AnnouncementsScreen
 import mx.tec.crystalguard.ui.screens.AttendanceScreen
 import mx.tec.crystalguard.ui.screens.EducatorCalendarScreen
 import mx.tec.crystalguard.ui.screens.EducatorDashboardScreen
 import mx.tec.crystalguard.ui.screens.GalleryScreen
+import mx.tec.crystalguard.ui.screens.GroupCalendarScreen
 import mx.tec.crystalguard.ui.screens.GroupDetailScreen
+import mx.tec.crystalguard.ui.state.ClassMaterialViewModel
 import mx.tec.crystalguard.ui.state.AnnouncementsViewModel
 import mx.tec.crystalguard.ui.state.AttendanceViewModel
 import mx.tec.crystalguard.ui.state.EducatorCalendarViewModel
 import mx.tec.crystalguard.ui.state.EducatorDashboardViewModel
 import mx.tec.crystalguard.ui.state.GalleryViewModel
+import mx.tec.crystalguard.ui.state.GroupCalendarViewModel
 import mx.tec.crystalguard.ui.state.GroupDetailViewModel
 import mx.tec.crystalguard.ui.state.NavigationViewModel
 
@@ -48,9 +53,13 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
 
     val secondaryScreenTitle = when {
         currentRoute?.startsWith("detail") == true || currentRoute == Route.GROUP_DETAIL -> "Detalle del Grupo"
-        currentRoute?.startsWith("attendance") == true -> "Pase de Lista"
-        currentRoute?.startsWith("announcements") == true -> "Anuncios"
-        currentRoute?.startsWith("galery") == true -> "Galería"
+        currentRoute?.startsWith("calendar/") == true || currentRoute == Route.CALENDAR -> "Calendario de Grupo"
+        currentRoute?.startsWith("classMaterial/") == true || currentRoute == Route.CLASS_MATERIAL -> "Material de Clase"
+        currentRoute?.startsWith("attendance/") == true || currentRoute == Route.ATTENDANCE -> "Pase de Lista"
+        currentRoute?.startsWith("announcements/") == true || currentRoute == Route.ANNOUNCEMENTS -> "Anuncios"
+        currentRoute?.startsWith("bitacora/") == true || currentRoute == Route.BITACORA -> "Bitácora"
+        currentRoute?.startsWith("galery") == true || currentRoute == Route.GALERIA -> "Galería"
+        currentRoute?.startsWith("people/") == true || currentRoute == Route.PEOPLE -> "Personas"
         else -> "Detalle"
     }
 
@@ -75,7 +84,13 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                 currentRoute = currentRoute,
                 onItemClick = { route ->
                     if (currentRoute != route) {
-                        nav.navigateSingle(route)
+                        nav.navigate(route) {
+                            popUpTo(nav.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 },
             )
@@ -110,14 +125,40 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                     onBackClick = { nav.popBackStack() },
                     onItemClick = { item ->
                         viewModel.onItemClick(item) { route ->
-                            try {
-                                nav.navigateSingle(route)
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
+                            nav.navigate(route)
                         }
                     },
                     onReintentar = { viewModel.cargarGrupo(groupId) },
+                )
+            }
+
+            composable(Route.CLASS_MATERIAL) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: ClassMaterialViewModel = viewModel()
+
+                LaunchedEffect(groupId) {
+                    viewModel.cargarMateriales(groupId)
+                }
+
+                ClassMaterialScreen(
+                    viewModel = viewModel,
+                )
+            }
+
+            composable(Route.CALENDAR) { entry: NavBackStackEntry ->
+                val groupIdStr = entry.arguments?.getString("groupId")
+                val groupId = groupIdStr?.toIntOrNull() ?: 1
+
+                val viewModel: GroupCalendarViewModel = viewModel()
+
+                LaunchedEffect(groupId) {
+                    viewModel.cargarCalendarioGrupo(groupId)
+                }
+
+                GroupCalendarScreen(
+                    viewModel = viewModel,
                 )
             }
 
@@ -187,6 +228,14 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
                 )
             }
 
+            composable(Route.PEOPLE) {
+                VacioView(mensaje = "Pantalla de Personas en construcción.")
+            }
+
+            composable(Route.BITACORA) {
+                VacioView(mensaje = "Pantalla de Bitácora en construcción.")
+            }
+
             composable(Route.EDUCATOR_CALENDAR) {
                 val viewModel: EducatorCalendarViewModel = viewModel()
 
@@ -196,7 +245,7 @@ fun CrystalGuardNavHost(onSalir: () -> Unit) {
             }
 
             composable(Route.EDUCATOR_NOTIFICATIONS) {
-                // Pantalla futura
+                VacioView(mensaje = "Pantalla de Notificaciones en construcción.")
             }
         }
     }
